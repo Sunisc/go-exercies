@@ -17,33 +17,15 @@ type problem struct {
 func main() {
 	fmt.Println("🔖 quiz game 🎯")
 
-	file, err := os.Open("problems.csv")
-	if err != nil {
-		log.Fatalln("Error opening file", err)
-	}
-	defer file.Close()
+	records := readFile()
+	problems := loadProblems(records)
+	startQuiz(problems)
+}
 
-	reader := csv.NewReader(file)
-	records, err := reader.ReadAll()
-	if err != nil {
-		log.Fatalln("Error reading csv", err)
-	}
-
-	problems := []problem{}
-	for _, record := range records {
-		question := record[0]
-		answer, err := strconv.Atoi(record[01])
-		if err != nil {
-			log.Fatalln("Solution must be an int", err)
-		}
-		problems = append(problems, problem{question, answer})
-	}
-
-	fmt.Println("Problems loaded successfully ...")
-	fmt.Println("Quiz starting ...")
+func startQuiz(problems []problem) {
+	fmt.Println("Starting Quiz ...")
 
 	score := 0
-
 	for _, problem := range problems {
 		fmt.Print("\n", problem.question, " = ?\n")
 		fmt.Println("Enter your answer: ")
@@ -56,6 +38,7 @@ func main() {
 			fmt.Println("Too hard? Try the next one!")
 		} else {
 			// clean up input
+			var err error
 			input = strings.Trim(input, " ")
 			answer, err = strconv.Atoi(input)
 			if err != nil {
@@ -69,6 +52,38 @@ func main() {
 		}
 	}
 
-	scoreString := fmt.Sprint("You've scored: ", score, "/", len(problems))
-	fmt.Println(scoreString)
+	scoreMessage := fmt.Sprint("You've scored: ", score, "/", len(problems))
+	fmt.Println(scoreMessage)
+}
+
+func loadProblems(records [][]string) []problem {
+	fmt.Println("Loading Problems...")
+
+	problems := []problem{}
+	for _, record := range records {
+		question := record[0]
+		answer, err := strconv.Atoi(record[1])
+		if err != nil {
+			log.Fatalln("Solution must be an int", err)
+		}
+		problems = append(problems, problem{question, answer})
+	}
+	return problems
+}
+
+func readFile() [][]string {
+	fmt.Println("Reading File...")
+
+	file, err := os.Open("problems.csv")
+	if err != nil {
+		log.Fatalln("Error opening file", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		log.Fatalln("Error reading csv", err)
+	}
+	return records
 }
