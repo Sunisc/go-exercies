@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type problem struct {
@@ -17,15 +19,26 @@ type problem struct {
 func main() {
 	fmt.Println("🔖 quiz game 🎯")
 
+	timePtr := flag.Int("time-limit", 30, "set the time limit for the quiz. default is 30")
+	flag.Parse()
 	records := readFile()
 	problems := loadProblems(records)
-	startQuiz(problems)
+	fmt.Println("Ready. Press any key to start")
+	var input string
+	fmt.Scan("%s", &input)
+	if input != "" {
+		startQuiz(problems, *timePtr)
+	}
 }
 
-func startQuiz(problems []problem) {
-	fmt.Println("Starting Quiz ...")
-
+func startQuiz(problems []problem, duration int) {
 	score := 0
+	fmt.Println("Starting Quiz:", duration, "seconds left")
+	f := func() {
+		fmt.Println("Times Up!\nYou've scored", score, "/", len(problems))
+		os.Exit(0)
+	}
+	timer := time.AfterFunc(time.Duration(duration)*time.Second, f)
 	for _, problem := range problems {
 		fmt.Print("\n", problem.question, " = ?\n")
 		fmt.Println("Enter your answer: ")
@@ -54,6 +67,7 @@ func startQuiz(problems []problem) {
 
 	scoreMessage := fmt.Sprint("You've scored: ", score, "/", len(problems))
 	fmt.Println(scoreMessage)
+	<-timer.C
 }
 
 func loadProblems(records [][]string) []problem {
