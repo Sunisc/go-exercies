@@ -20,15 +20,13 @@ func main() {
 	fmt.Println("🔖 quiz game 🎯")
 
 	timePtr := flag.Int("time-limit", 30, "set the time limit for the quiz. default is 30")
+	csvFilePtr := flag.String("csv", "problems.csv", "csv to read problems from")
 	flag.Parse()
-	records := readFile()
+
+	records := readFile(csvFilePtr)
 	problems := loadProblems(records)
-	fmt.Println("Ready. Press any key to start")
-	var input string
-	fmt.Scan("%s", &input)
-	if input != "" {
-		startQuiz(problems, *timePtr)
-	}
+	startQuiz(problems, *timePtr)
+
 }
 
 func startQuiz(problems []problem, duration int) {
@@ -85,12 +83,12 @@ func loadProblems(records [][]string) []problem {
 	return problems
 }
 
-func readFile() [][]string {
+func readFile(csvFileName *string) [][]string {
 	fmt.Println("Reading File...")
 
-	file, err := os.Open("problems.csv")
+	file, err := os.Open(*csvFileName)
 	if err != nil {
-		log.Fatalln("Error opening file", err)
+		log.Fatalln(fmt.Sprintf("Failed to open file: %s\n", *csvFileName), err)
 	}
 	defer file.Close()
 
