@@ -25,50 +25,11 @@ func main() {
 
 	records := readFile(csvFilePtr)
 	problems := loadProblems(records)
-	startQuiz2(problems, *timePtr)
+	startQuiz(problems, *timePtr)
 
 }
 
 func startQuiz(problems []problem, duration int) {
-	score := 0
-	fmt.Println("Starting Quiz:", duration, "seconds left")
-	f := func() {
-		fmt.Println("Times Up!\nYou've scored", score, "/", len(problems))
-		os.Exit(0)
-	}
-	timer := time.AfterFunc(time.Duration(duration)*time.Second, f)
-	for _, problem := range problems {
-		fmt.Print("\n", problem.question, " = ?\n")
-		fmt.Println("Enter your answer: ")
-
-		var input string
-		var answer int
-		fmt.Scanln(&input)
-
-		if input == "" {
-			fmt.Println("Too hard? Try the next one!")
-		} else {
-			// clean up input
-			var err error
-			input = strings.Trim(input, " ")
-			answer, err = strconv.Atoi(input)
-			if err != nil {
-				fmt.Println("Only numeric answers are accepted, try again on the next one!")
-			}
-		}
-
-		if answer == problem.answer {
-			fmt.Println("Correct!")
-			score += 1
-		}
-	}
-
-	scoreMessage := fmt.Sprint("You've scored: ", score, "/", len(problems))
-	fmt.Println(scoreMessage)
-	<-timer.C
-}
-
-func startQuiz2(problems []problem, duration int) {
 	score := 0
 	timer := time.NewTimer(time.Duration(duration) * time.Second)
 
