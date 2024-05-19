@@ -3,12 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
-
-	dbstuff "sunisc.com/go-web-examples"
 )
 
 func main() {
-	dbstuff.ConnectDB()
 	// router()
 	// httpServer()
 	// helloWorld()
