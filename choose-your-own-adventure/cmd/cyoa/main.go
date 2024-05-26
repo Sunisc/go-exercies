@@ -50,10 +50,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), mux))
 }
 
-// Updated chapter parsing function. Technically you don't
-// *have* to get the story from the path (it could be a
-// header or anything else) but I'm not going to rename this
-// since "path" is what we used in the videos.
+// Updated chapter parsing function.
 func pathFn(r *http.Request) string {
 	path := strings.TrimSpace(r.URL.Path)
 	if path == "/story" || path == "/story/" {
